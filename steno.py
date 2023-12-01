@@ -69,8 +69,20 @@ def decode_image(img):
         if pixels[-1] % 2 != 0:
             return data
 
+def encrypt(text, s):
+    result = ""
+    for i in range(len(text)):
+        char = text[i]
+        if char.isupper():
+            result += chr((ord(char) + s - 65) % 26 + 65)
+        elif char.islower():
+            result += chr((ord(char) + s - 97) % 26 + 97)
+        else:
+            result += char
+    return result
+
 # Streamlit UI
-st.title("Image Steganography - by [Harsh Dhariwal](http://harshdhariwal.site) ")
+st.title("Image Steganography - by Harsh Dhariwal")
 
 uploaded_file = st.file_uploader("Upload Image")
 if uploaded_file is not None:
@@ -83,14 +95,20 @@ if uploaded_file is not None:
     if option == "Encode":
         st.subheader("Encode Message in Image")
         message = st.text_input("Enter the message to hide:")
+        private_key = st.number_input("Enter the private key:", value=0, step=1)
         if st.button("Encode"):
             if message:
-                new_image = encode_image(image, message)
+                encrypted_message = encrypt(message, private_key)
+                new_image = encode_image(image, encrypted_message)
                 st.image(new_image, caption='Encoded Image', use_column_width=True)
                 st.markdown("### Download Encoded Image")
                 st.image(new_image, output_format='PNG', use_column_width=True)
+
     elif option == "Decode":
         st.subheader("Decode Message from Image")
+        private_key = st.number_input("Enter the private key:", value=0, step=1)
         if st.button("Decode"):
             decoded_message = decode_image(uploaded_file)
+            decrypted_message = encrypt(decoded_message, -private_key)
             st.text_area("Decoded Message", value=decoded_message, height=200)
+            st.text_area("Decrypted Message", value=decrypted_message, height=200)
