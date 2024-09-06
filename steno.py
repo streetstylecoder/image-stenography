@@ -82,7 +82,7 @@ def encrypt(text, s):
     return result
 
 # Streamlit UI
-st.title("Image Steganography - by Harsh Dhariwal")
+st.title("Image Steganography - by Anshika")
 
 uploaded_file = st.file_uploader("Upload Image")
 if uploaded_file is not None:
